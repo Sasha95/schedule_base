@@ -23,7 +23,7 @@ CREATE TABLE teachers(
 
 CREATE TABLE classroom(
     id SERIAL PRIMARY KEY,
-    number VARCHAR(50) NOT NULL UNIQUE,
+    number VARCHAR(50) NOT NULL,
     capacity Int NOT NULL,
     housing VARCHAR(5) NOT NULL,
     type audience NOT NULL
@@ -31,7 +31,7 @@ CREATE TABLE classroom(
 
 CREATE TABLE groups(
     id SERIAL PRIMARY KEY,
-    name VARCHAR(20) NOT NULL UNIQUE,
+    name VARCHAR(20) NOT NULL,
     number_of_students Int NOT NULL,
     faculty_id INTEGER REFERENCES faculty(id) NOT NULL
 );
