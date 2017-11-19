@@ -17,35 +17,32 @@ CREATE TABLE faculty(
  
 CREATE TABLE teachers(
     id SERIAL PRIMARY KEY,
-    first_name   TEXT,
-    last_name    TEXT,
-    patronymic  TEXT,
-    science_degree TEXT,
-    faculty_id INTEGER REFERENCES faculty(id)
+    name   TEXT NOT NULL UNIQUE,
+    science_degree TEXT NOT NULL
 );
 
 CREATE TABLE classroom(
     id SERIAL PRIMARY KEY,
-    number VARCHAR(50),
-    capacity Int,
-    housing VARCHAR(5),
-    type audience
+    number VARCHAR(50) NOT NULL UNIQUE,
+    capacity Int NOT NULL,
+    housing VARCHAR(5) NOT NULL,
+    type audience NOT NULL
 );
 
 CREATE TABLE groups(
     id SERIAL PRIMARY KEY,
-    name   VARCHAR(20),
-    number_of_students Int,
-    faculty_id INTEGER REFERENCES faculty(id)
+    name VARCHAR(20) NOT NULL UNIQUE,
+    number_of_students Int NOT NULL,
+    faculty_id INTEGER REFERENCES faculty(id) NOT NULL
 );
 
 CREATE TABLE discipline(
     id SERIAL PRIMARY KEY,
-    name TEXT,
-    group_id INTEGER REFERENCES groups(id),
+    name TEXT NOT NULL,
+    group_id INTEGER REFERENCES groups(id) NOT NULL,
     type lecture,
-    teacher_id INTEGER REFERENCES teachers(id),
-    classroom_id INTEGER REFERENCES classroom(id)
+    teacher_id INTEGER REFERENCES teachers(id) NOT NULL,
+    classroom_id INTEGER REFERENCES classroom(id) NOT NULL
 );
 
 CREATE DOMAIN day_week AS INT
@@ -71,7 +68,7 @@ CREATE TABLE schedule(
 
 CREATE TABLE person(
     id SERIAL PRIMARY KEY, 
-    name VARCHAR(100)
+    name VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE account (
@@ -81,8 +78,8 @@ CREATE TABLE account (
     person_id INTEGER REFERENCES person(id)
 );
 
-CREATE ROLE user_mangir;
-CREATE ROLE admin_mangir;
+/*CREATE ROLE user_mangir;
+CREATE ROLE admin_mangir;*/
 
 CREATE TYPE role AS ENUM ('user_mangir', 'admin_mangir');
 
