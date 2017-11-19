@@ -66,16 +66,10 @@ CREATE TABLE schedule(
     PRIMARY KEY (group_id, discipline_id,teacher_id,classroom_id,days,pair)
 );
 
-CREATE TABLE person(
-    id SERIAL PRIMARY KEY, 
-    name VARCHAR(100) NOT NULL
-);
-
 CREATE TABLE account (
     id SERIAL PRIMARY KEY,
     login VARCHAR(20) NOT NULL UNIQUE,
-    password VARCHAR(20) NOT NULL,
-    person_id INTEGER REFERENCES person(id)
+    password VARCHAR(20) NOT NULL
 );
 
 /*CREATE ROLE user_mangir;
@@ -110,7 +104,7 @@ GRANT admin_mangir, user_mangir TO mangir;
 
 GRANT USAGE ON SCHEMA schedule1 TO admin_mangir, user_mangir;
 GRANT SELECT, UPDATE, DELETE ON discipline, teachers, classroom, groups TO admin_mangir;
-GRANT SELECT ON account, person TO admin_mangir;
+GRANT SELECT ON account TO admin_mangir;
 GRANT ALL ON schedule TO admin_mangir;
 
 ALTER TABLE discipline ENABLE ROW LEVEL SECURITY;
