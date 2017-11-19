@@ -1,0 +1,78 @@
+INSERT INTO faculty VALUES 
+(default, 'ФМФ'), 
+(default, 'ЕГФ'),
+(default, 'ЭФ'), 
+(default, 'МЕД'),
+(default, 'ФОН');
+
+INSERT INTO groups VALUES 
+(default, '103', 20, 1), 
+(default, '105', 10, 1), 
+(default, '202', 12, 2), 
+(default, '406', 6, 4), 
+(default, '103', 20, 2), 
+(default, '303', 11, 3), 
+(default, '503', 9, 5), 
+(default, '103', 12, 5), 
+(default, '602', 3, 1);
+
+INSERT INTO classroom VALUES 
+(default, '102', 25, 'Б', 'lecture'), 
+(default, '108', 10, 'Б', 'practice'), 
+(default, '305', 15, 'Б', 'laboratory'), 
+(default, '102', 11, 'A', 'lecture'), 
+(default, '301', 12, 'B', 'lecture'), 
+(default, '11', 25, 'Б', 'practice'), 
+(default, '222', 25, 'Г', 'lecture'), 
+(default, '202', 25, 'Е', 'laboratory'), 
+(default, '108', 25, 'Б', 'laboratory'), 
+(default, '205', 25, 'Ж', 'lecture');
+
+INSERT INTO teachers VALUES 
+(default, 'Коснстантинов Николай Афанасьевич', 'доцент'), 
+(default, 'Хаджи Петр Иванович', 'профессор'), 
+(default, 'Великодный Вадим Игоревич', 'старший преподаватель'), 
+(default, 'Пупкин Василий Васильевич', 'преподаватель'), 
+(default, 'Леонова Наталья Григорьевна', 'доцент'), 
+(default, 'Никифоров Валерий Витальевич', 'преподаватель'), 
+(default, 'Коровай Александр Валерьевич', 'доцент'), 
+(default, 'Спиридонова Галина Васильевна', 'доцент'), 
+(default, 'Денисов Сергей Сергеевич', 'преподаватель'), 
+(default, 'Демиденко Иван Владимирович', 'преподаватель');
+
+INSERT INTO discipline VALUES 
+(default, 'Программирование', 2, 'lecture', 3, 1), 
+(default, 'Физика', 1, 'practice', 1, 1), 
+(default, 'Экономика', 3, 'laboratory', 2, 2), 
+(default, 'История', 4, 'lecture', 4, 2), 
+(default, 'Право', 4, 'practice', 5, 4), 
+(default, 'Базы Данных', 5, 'practice', 5, 3), 
+(default, 'Фармокология', 5, 'lecture', 1, 5), 
+(default, 'Физ-ра', 1, 'practice', 2, 5), 
+(default, 'Микроэлектроника', 1, 'lecture', 3, 1), 
+(default, 'Методы оптимизации', 2, 'laboratory', 3, 3);
+
+INSERT INTO account VALUES 
+(default, 'Саша', '123456'), 
+(default, 'оля44', '123456111'), 
+(default, 'Вася45', 'авы45авы'), 
+(default, 'ауц455', 'ауцацу'), 
+(default, 'ааа22', '123456'), 
+(default, 'Ирпу', '12уц'), 
+(default, 'Свцуауц', '12уц'), 
+(default, 'Сауцацу', '123цуац6'), 
+(default, 'Свцйвйцп', '156');
+
+INSERT INTO schedule VALUES 
+(1, 2, 1,4,1,1,1), 
+(2, 4, 2,2,2,2,2), 
+(3, 1, 3,3,3,3,3), 
+(4, 3, 4,1,4,4,1), 
+(5, 2, 5,4,5,5,1), 
+(6, 2, 6,4,3,6,1), 
+(7, 1, 7,5,2,1,1), 
+(8, 1, 8,6,2,2,2), 
+(9, 3, 9,3,1,3,3), 
+(2, 4, 10,4,1,4,1), 
+(3, 4, 1,1,2,5,1), 
+(1, 5, 2,1,3,3,1);
