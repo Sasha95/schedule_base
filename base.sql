@@ -12,7 +12,7 @@ CREATE TYPE parity AS ENUM ('even','odd','constantly');
 
 CREATE TABLE faculty(
     id SERIAL PRIMARY KEY,
-    name TEXT
+    name TEXT NOT NULL UNIQUE
 );
  
 CREATE TABLE teachers(
