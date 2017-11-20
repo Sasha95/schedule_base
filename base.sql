@@ -127,3 +127,18 @@ CREATE POLICY delete_faculty ON faculty FOR DELETE TO admin_mangir USING (curren
 */
 
 COMMIT;
+
+--------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION she1(fuck int, gr int default 0, teach int default 0, days int default 0, pair int default 0) 
+   RETURNS SETOF schedule1.schedule AS
+$$
+   SELECT * FROM schedule1.schedule where 
+	schedule1.schedule.faculty_id=fuck 
+	and (schedule1.schedule.group_id=gr or gr=0) 
+	and (schedule1.schedule.teacher_id=teach or teach=0) 
+	and (schedule1.schedule.days=days or days=0) 
+	and (schedule1.schedule.pair=pair or pair=0) 
+$$
+   LANGUAGE SQL;	
+
+select * from she1(1,1,1,1,1);
