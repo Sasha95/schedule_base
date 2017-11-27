@@ -1,5 +1,5 @@
-DROP SCHEMA schedule1 CASCADE;
-DROP ROLE IF EXISTS  schedule_login_mangir, schedule_admin_mangir, schedule_moderator_mangir, schedule_anonim_mangir;
+/*DROP SCHEMA schedule1 CASCADE;
+DROP ROLE IF EXISTS  schedule_login_mangir, schedule_admin_mangir, schedule_moderator_mangir, schedule_anonim_mangir;*/
 
 BEGIN;
 CREATE ROLE schedule_login_mangir LOGIN PASSWORD '503fmf2017ABC';
@@ -12,17 +12,26 @@ GRANT schedule_anonim_mangir TO schedule_login_mangir;
 
 CREATE SCHEMA schedule1;
 SET search_path TO schedule1;
+
 CREATE TYPE audience AS ENUM ('lecture','practice','laboratory');
 CREATE TYPE lecture AS ENUM ('lecture','practice','laboratory');
 CREATE TYPE parity AS ENUM ('even','odd','constantly');
 CREATE TYPE education_form  AS ENUM ('full-time', 'extramural', 'part-time');
-CREATE TYPE role AS ENUM ('schedule_admin','schedule_moderator','schedule_anonim');
+CREATE TYPE role AS ENUM ('schedule_admin_mangir','schedule_moderator_mangir','schedule_anonim_mangir');
 CREATE TYPE jwt AS (role role, person_id int);
 
 CREATE TABLE faculty(
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL
 );
+
+CREATE TABLE education_level(
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL
+);
+
+GRANT SELECT, UPDATE, DELETE, INSERT ON faculty TO schedule_admin_mangir, schedule_moderator_mangir;
+GRANT SELECT ON faculty TO schedule_anonim_mangir;
 
 CREATE TABLE teachers(
     id SERIAL PRIMARY KEY,
@@ -35,9 +44,6 @@ CREATE TABLE teachers(
 
 GRANT SELECT, UPDATE, DELETE, INSERT ON teachers TO schedule_admin_mangir, schedule_moderator_mangir;
 GRANT SELECT ON teachers TO schedule_anonim_mangir;
-
-GRANT SELECT, UPDATE, DELETE, INSERT ON faculty TO schedule_admin_mangir, schedule_moderator_mangir;
-GRANT SELECT ON faculty TO schedule_anonim_mangir;
 
 CREATE TABLE classroom(
     id SERIAL PRIMARY KEY,
@@ -53,10 +59,9 @@ GRANT SELECT ON classroom TO schedule_anonim_mangir;
 CREATE TABLE groups(
     id SERIAL PRIMARY KEY,
     name   VARCHAR(20) NOT NULL,
-    number_of_students Int NOT NULL,
+    short_name   VARCHAR(20) NOT NULL,
     faculty_id INTEGER REFERENCES faculty(id) NOT NULL,
     education_form education_form NOT NULL
-    
 );
 
 GRANT SELECT, UPDATE, DELETE, INSERT ON groups TO schedule_admin_mangir, schedule_moderator_mangir;
@@ -66,7 +71,8 @@ CREATE TABLE discipline(
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     group_id INTEGER REFERENCES groups(id) NOT NULL,
-    type lecture
+    type lecture,
+    faculty_id INTEGER REFERENCES faculty(id) NOT NULL
 );
 
 GRANT SELECT, UPDATE, DELETE, INSERT ON discipline TO schedule_admin_mangir, schedule_moderator_mangir;
@@ -96,11 +102,13 @@ CREATE TABLE schedule(
 GRANT SELECT, UPDATE, DELETE, INSERT ON schedule TO schedule_admin_mangir, schedule_moderator_mangir;
 GRANT SELECT ON schedule TO schedule_anonim_mangir;
 
-
 CREATE TABLE person (
     id SERIAL PRIMARY KEY, 
     name VARCHAR(100)
 );
+
+GRANT SELECT, UPDATE, DELETE, INSERT ON person TO schedule_admin_mangir, schedule_moderator_mangir;
+GRANT SELECT ON person TO schedule_anonim_mangir;
 
 CREATE TABLE account (
     id SERIAL PRIMARY KEY,
@@ -111,7 +119,8 @@ CREATE TABLE account (
     faculty_id INTEGER REFERENCES faculty(id) NOT NULL
 );
 
-
+GRANT SELECT, UPDATE, DELETE, INSERT ON account TO schedule_admin_mangir, schedule_moderator_mangir;
+GRANT SELECT ON account TO schedule_anonim_mangir;
 
 ALTER TABLE schedule ENABLE ROW LEVEL SECURITY;
 CREATE POLICY select_schedule ON schedule FOR SELECT TO schedule_admin_mangir, schedule_moderator_mangir, schedule_anonim_mangir USING (true);
@@ -122,6 +131,60 @@ CREATE POLICY delete_schedule_admin ON schedule FOR DELETE TO schedule_admin_man
 CREATE POLICY update_schedule_moderator ON schedule FOR UPDATE TO schedule_moderator_mangir USING ((SELECT faculty_id FROM account WHERE person_id=current_setting('jwt.person_id')::int)=faculty_id);
 CREATE POLICY insert_schedule_moderator ON schedule FOR INSERT TO schedule_moderator_mangir WITH CHECK ((SELECT faculty_id FROM account WHERE person_id=current_setting('jwt.person_id')::int)=faculty_id);
 CREATE POLICY delete_schedule_moderator ON schedule FOR DELETE TO schedule_moderator_mangir USING ((SELECT faculty_id FROM account WHERE person_id=current_setting('jwt.person_id')::int)=faculty_id);
+
+ALTER TABLE teachers ENABLE ROW LEVEL SECURITY;
+CREATE POLICY select_teachers ON teachers FOR SELECT TO schedule_admin_mangir, schedule_moderator_mangir, schedule_anonim_mangir USING (true);
+CREATE POLICY update_teachers_admin ON teachers FOR UPDATE TO schedule_admin_mangir USING (true);
+CREATE POLICY insert_teachers_admin ON teachers FOR INSERT TO schedule_admin_mangir WITH CHECK (true);
+CREATE POLICY delete_teachers_admin ON teachers FOR DELETE TO schedule_admin_mangir USING (true);
+
+CREATE POLICY update_teachers_moderator ON teachers FOR UPDATE TO schedule_moderator_mangir USING ((SELECT faculty_id FROM account WHERE person_id=current_setting('jwt.person_id')::int)=faculty_id);
+CREATE POLICY insert_teachers_moderator ON teachers FOR INSERT TO schedule_moderator_mangir WITH CHECK ((SELECT faculty_id FROM account WHERE person_id=current_setting('jwt.person_id')::int)=faculty_id);
+CREATE POLICY delete_teachers_moderator ON teachers FOR DELETE TO schedule_moderator_mangir USING ((SELECT faculty_id FROM account WHERE person_id=current_setting('jwt.person_id')::int)=faculty_id);
+
+ALTER TABLE discipline ENABLE ROW LEVEL SECURITY;
+CREATE POLICY select_discipline ON discipline FOR SELECT TO schedule_admin_mangir, schedule_moderator_mangir, schedule_anonim_mangir USING (true);
+CREATE POLICY update_discipline_admin ON discipline FOR UPDATE TO schedule_admin_mangir USING (true);
+CREATE POLICY insert_discipline_admin ON discipline FOR INSERT TO schedule_admin_mangir WITH CHECK (true);
+CREATE POLICY delete_discipline_admin ON discipline FOR DELETE TO schedule_admin_mangir USING (true);
+
+CREATE POLICY update_discipline_moderator ON discipline FOR UPDATE TO schedule_moderator_mangir USING ((SELECT faculty_id FROM account WHERE person_id=current_setting('jwt.person_id')::int)=faculty_id);
+CREATE POLICY insert_discipline_moderator ON discipline FOR INSERT TO schedule_moderator_mangir WITH CHECK ((SELECT faculty_id FROM account WHERE person_id=current_setting('jwt.person_id')::int)=faculty_id);
+CREATE POLICY delete_discipline_moderator ON discipline FOR DELETE TO schedule_moderator_mangir USING ((SELECT faculty_id FROM account WHERE person_id=current_setting('jwt.person_id')::int)=faculty_id);
+
+ALTER TABLE groups ENABLE ROW LEVEL SECURITY;
+CREATE POLICY select_groups ON groups FOR SELECT TO schedule_admin_mangir, schedule_moderator_mangir, schedule_anonim_mangir USING (true);
+CREATE POLICY update_groups_admin ON groups FOR UPDATE TO schedule_admin_mangir USING (true);
+CREATE POLICY insert_groups_admin ON groups FOR INSERT TO schedule_admin_mangir WITH CHECK (true);
+CREATE POLICY delete_groups_admin ON groups FOR DELETE TO schedule_admin_mangir USING (true);
+
+CREATE POLICY update_groups_moderator ON groups FOR UPDATE TO schedule_moderator_mangir USING ((SELECT faculty_id FROM account WHERE person_id=current_setting('jwt.person_id')::int)=faculty_id);
+CREATE POLICY insert_groups_moderator ON groups FOR INSERT TO schedule_moderator_mangir WITH CHECK ((SELECT faculty_id FROM account WHERE person_id=current_setting('jwt.person_id')::int)=faculty_id);
+CREATE POLICY delete_groups_moderator ON groups FOR DELETE TO schedule_moderator_mangir USING ((SELECT faculty_id FROM account WHERE person_id=current_setting('jwt.person_id')::int)=faculty_id);
+
+ALTER TABLE faculty ENABLE ROW LEVEL SECURITY;
+CREATE POLICY select_faculty ON faculty FOR SELECT TO schedule_admin_mangir, schedule_moderator_mangir, schedule_anonim_mangir USING (true);
+CREATE POLICY update_faculty_admin ON faculty FOR UPDATE TO schedule_admin_mangir USING (true);
+CREATE POLICY insert_faculty_admin ON faculty FOR INSERT TO schedule_admin_mangir WITH CHECK (true);
+CREATE POLICY delete_faculty_admin ON faculty FOR DELETE TO schedule_admin_mangir USING (true);
+
+ALTER TABLE classroom ENABLE ROW LEVEL SECURITY;
+CREATE POLICY select_classroom ON classroom FOR SELECT TO schedule_admin_mangir, schedule_moderator_mangir, schedule_anonim_mangir USING (true);
+CREATE POLICY update_classroom_admin ON classroom FOR UPDATE TO schedule_admin_mangir USING (true);
+CREATE POLICY insert_classroom_admin ON classroom FOR INSERT TO schedule_admin_mangir WITH CHECK (true);
+CREATE POLICY delete_classroom_admin ON classroom FOR DELETE TO schedule_admin_mangir USING (true);
+
+ALTER TABLE person ENABLE ROW LEVEL SECURITY;
+CREATE POLICY select_person ON person FOR SELECT TO schedule_admin_mangir, schedule_moderator_mangir USING (true);
+CREATE POLICY update_person_admin ON person FOR UPDATE TO schedule_admin_mangir USING (true);
+CREATE POLICY insert_person_admin ON person FOR INSERT TO schedule_admin_mangir WITH CHECK (true);
+CREATE POLICY delete_person_admin ON person FOR DELETE TO schedule_admin_mangir USING (true);
+
+ALTER TABLE account ENABLE ROW LEVEL SECURITY;
+CREATE POLICY select_account ON account FOR SELECT TO schedule_admin_mangir, schedule_moderator_mangir USING (true);
+CREATE POLICY update_account_admin ON account FOR UPDATE TO schedule_admin_mangir USING (true);
+CREATE POLICY insert_account_admin ON account FOR INSERT TO schedule_admin_mangir WITH CHECK (true);
+CREATE POLICY delete_account_admin ON account FOR DELETE TO schedule_admin_mangir USING (true);
 
 CREATE OR REPLACE FUNCTION change_password(password varchar(20), person_id int) RETURNS void AS 
 $$
@@ -145,18 +208,3 @@ $$
 LANGUAGE plpgsql SECURITY DEFINER;
 
 COMMIT;
-
---------------------------------------------------------------------------
-CREATE OR REPLACE FUNCTION she1(fuck int, gr int default 0, teach int default 0, days int default 0, pair int default 0) 
-   RETURNS SETOF schedule1.schedule AS
-$$
-   SELECT * FROM schedule1.schedule where 
-	schedule1.schedule.faculty_id=fuck 
-	and (schedule1.schedule.group_id=gr or gr=0) 
-	and (schedule1.schedule.teacher_id=teach or teach=0) 
-	and (schedule1.schedule.days=days or days=0) 
-	and (schedule1.schedule.pair=pair or pair=0) 
-$$
-   LANGUAGE SQL;	
-
-select * from she1(1,1,1,1,1);
