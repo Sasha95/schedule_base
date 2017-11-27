@@ -60,8 +60,10 @@ CREATE TABLE groups(
     id SERIAL PRIMARY KEY,
     name   VARCHAR(20) NOT NULL,
     short_name   VARCHAR(20) NOT NULL,
+    recruitment_year int NOT NULL,
     faculty_id INTEGER REFERENCES faculty(id) NOT NULL,
-    education_form education_form NOT NULL
+    education_form education_form NOT NULL,
+    education_level_id INTEGER REFERENCES  education_level(id) NOT NULL
 );
 
 GRANT SELECT, UPDATE, DELETE, INSERT ON groups TO schedule_admin_mangir, schedule_moderator_mangir;
@@ -121,6 +123,9 @@ CREATE TABLE account (
 
 GRANT SELECT, UPDATE, DELETE, INSERT ON account TO schedule_admin_mangir, schedule_moderator_mangir;
 GRANT SELECT ON account TO schedule_anonim_mangir;
+
+GRANT SELECT, UPDATE, DELETE, INSERT ON  education_level TO schedule_admin_mangir;
+GRANT SELECT ON education_level TO schedule_anonim_mangir, schedule_moderator_mangir, schedule_admin_mangir;
 
 ALTER TABLE schedule ENABLE ROW LEVEL SECURITY;
 CREATE POLICY select_schedule ON schedule FOR SELECT TO schedule_admin_mangir, schedule_moderator_mangir, schedule_anonim_mangir USING (true);
@@ -203,6 +208,18 @@ begin
     RETURN (ac.role, ac.person_id)::jwt;
   ELSE RETURN NULL;
   end if;
+end;
+$$ 
+LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION registration(login varchar(20), password varchar(20), name varchar(100)) RETURNS void AS 
+$$
+declare 
+per_id int;
+begin
+  INSERT INTO person (name) VALUES (name)
+    RETURNING id INTO per_id;
+  INSERT INTO account (login, hash, person_id) VALUES (login, crypt(password, gen_salt('md5')), per_id);
 end;
 $$ 
 LANGUAGE plpgsql SECURITY DEFINER;
