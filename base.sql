@@ -1,3 +1,9 @@
+/*
+copy education_level from '/home/solovenko/data/education_level.csv' with DELIMITER  ',' csv header;
+
+copy groups from '/home/solovenko/data/academic_group.csv' with DELIMITER  ',' csv header;
+*/
+
 DROP SCHEMA schedule1 CASCADE;
 DROP ROLE IF EXISTS  schedule_login_mangir, schedule_admin_mangir, schedule_moderator_mangir, schedule_anonim_mangir;
 
