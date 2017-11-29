@@ -1,5 +1,5 @@
-/*DROP SCHEMA schedule1 CASCADE;
-DROP ROLE IF EXISTS  schedule_login_mangir, schedule_admin_mangir, schedule_moderator_mangir, schedule_anonim_mangir;*/
+DROP SCHEMA schedule1 CASCADE;
+DROP ROLE IF EXISTS  schedule_login_mangir, schedule_admin_mangir, schedule_moderator_mangir, schedule_anonim_mangir;
 
 BEGIN;
 CREATE ROLE schedule_login_mangir LOGIN PASSWORD '503fmf2017ABC';
@@ -22,7 +22,8 @@ CREATE TYPE jwt AS (role role, person_id int);
 
 CREATE TABLE faculty(
     id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL
+    name TEXT NOT NULL,
+    short_name text
 );
 
 CREATE TABLE education_level(
