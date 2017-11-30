@@ -42,9 +42,7 @@ GRANT SELECT ON faculty TO schedule_anonim_mangir;
 
 CREATE TABLE teachers(
     id SERIAL PRIMARY KEY,
-    first_name   TEXT NOT NULL,
-    last_name    TEXT NOT NULL,
-    patronymic  TEXT NOT NULL,
+    name   TEXT NOT NULL,
     science_degree TEXT NOT NULL,
     faculty_id INTEGER REFERENCES faculty(id) NOT NULL
 );
@@ -227,6 +225,12 @@ begin
     RETURNING id INTO per_id;
   INSERT INTO account (login, hash, person_id) VALUES (login, crypt(password, gen_salt('md5')), per_id);
 end;
+$$ 
+LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION add_teacher(name text, science_degree text, faculty_id int) RETURNS void AS 
+$$
+
 $$ 
 LANGUAGE plpgsql SECURITY DEFINER;
 
