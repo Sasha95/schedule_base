@@ -80,8 +80,7 @@ CREATE TABLE discipline(
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     group_id INTEGER REFERENCES groups(id) NOT NULL,
-    type lecture,
-    faculty_id INTEGER REFERENCES faculty(id) NOT NULL
+    type lecture
 );
 
 GRANT SELECT, UPDATE, DELETE, INSERT ON discipline TO schedule_admin_mangir, schedule_moderator_mangir;
@@ -160,9 +159,9 @@ CREATE POLICY update_discipline_admin ON discipline FOR UPDATE TO schedule_admin
 CREATE POLICY insert_discipline_admin ON discipline FOR INSERT TO schedule_admin_mangir WITH CHECK (true);
 CREATE POLICY delete_discipline_admin ON discipline FOR DELETE TO schedule_admin_mangir USING (true);
 
-CREATE POLICY update_discipline_moderator ON discipline FOR UPDATE TO schedule_moderator_mangir USING ((SELECT faculty_id FROM account WHERE person_id=current_setting('jwt.person_id')::int)=faculty_id);
-CREATE POLICY insert_discipline_moderator ON discipline FOR INSERT TO schedule_moderator_mangir WITH CHECK ((SELECT faculty_id FROM account WHERE person_id=current_setting('jwt.person_id')::int)=faculty_id);
-CREATE POLICY delete_discipline_moderator ON discipline FOR DELETE TO schedule_moderator_mangir USING ((SELECT faculty_id FROM account WHERE person_id=current_setting('jwt.person_id')::int)=faculty_id);
+CREATE POLICY update_discipline_moderator ON discipline FOR UPDATE TO schedule_moderator_mangir USING ( group_id in (SELECT id FROM groups WHERE faculty_id=(SELECT faculty_id FROM account WHERE person_id=current_setting('jwt.person_id')::int)));
+CREATE POLICY insert_discipline_moderator ON discipline FOR INSERT TO schedule_moderator_mangir WITH CHECK ( group_id in (SELECT id FROM groups WHERE faculty_id=(SELECT faculty_id FROM account WHERE person_id=current_setting('jwt.person_id')::int)) );
+CREATE POLICY delete_discipline_moderator ON discipline FOR DELETE TO schedule_moderator_mangir USING ( group_id in (SELECT id FROM groups WHERE faculty_id=(SELECT faculty_id FROM account WHERE person_id=current_setting('jwt.person_id')::int)) );
 
 ALTER TABLE groups ENABLE ROW LEVEL SECURITY;
 CREATE POLICY select_groups ON groups FOR SELECT TO schedule_admin_mangir, schedule_moderator_mangir, schedule_anonim_mangir USING (true);
