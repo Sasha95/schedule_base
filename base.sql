@@ -1,5 +1,6 @@
 /*
 copy education_level from '/home/solovenko/data/education_level.csv' with DELIMITER  ',' csv header;
+copy faculty from '/home/solovenko/data/division.csv' with DELIMITER  ';' csv header;
 
 copy groups from '/home/solovenko/data/academic_group.csv' with DELIMITER  ',' csv header;
 */
