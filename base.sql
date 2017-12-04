@@ -85,11 +85,17 @@ GRANT SELECT, UPDATE, DELETE, INSERT ON groups TO schedule_admin_mangir, schedul
 GRANT SELECT ON groups TO schedule_anonim_mangir;
 
 CREATE TABLE discipline(
-    id SERIAL PRIMARY KEY,
+    id BIGINT PRIMARY KEY,
     name TEXT NOT NULL,
     group_id INTEGER REFERENCES groups(id) NOT NULL,
     type lecture
 );
+CREATE SEQUENCE discipline_id_seq
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 1
+  CACHE 1;
 
 GRANT SELECT, UPDATE, DELETE, INSERT ON discipline TO schedule_admin_mangir, schedule_moderator_mangir;
 GRANT SELECT ON discipline TO schedule_anonim_mangir;
