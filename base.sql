@@ -44,12 +44,21 @@ GRANT SELECT ON faculty TO schedule_anonim_mangir;
 CREATE TABLE teachers(
     id SERIAL PRIMARY KEY,
     name   TEXT NOT NULL,
-    science_degree TEXT NOT NULL,
-    faculty_id INTEGER REFERENCES faculty(id) NOT NULL
+    science_degree TEXT NOT NULL
 );
 
-GRANT SELECT, UPDATE, DELETE, INSERT ON teachers TO schedule_admin_mangir, schedule_moderator_mangir;
+CREATE TABLE teacher_by_faculty_master(
+   teacher_id INTEGER REFERENCES  teachers(id) NOT NULL,
+   faculty_id INTEGER REFERENCES faculty(id) NOT NULL,
+   type education_form NOT NULL
+);
+
+GRANT SELECT, UPDATE, DELETE, INSERT ON teachers TO schedule_admin_mangir;
+GRANT INSERT ON teachers TO schedule_moderator_mangir;
 GRANT SELECT ON teachers TO schedule_anonim_mangir;
+
+GRANT SELECT, UPDATE, DELETE, INSERT ON teacher_by_faculty_master TO schedule_admin_mangir;
+GRANT SELECT ON teacher_by_faculty_master TO schedule_anonim_mangir;
 
 CREATE TABLE classroom(
     id SERIAL PRIMARY KEY,
@@ -142,16 +151,6 @@ CREATE POLICY update_schedule_moderator ON schedule FOR UPDATE TO schedule_moder
 CREATE POLICY insert_schedule_moderator ON schedule FOR INSERT TO schedule_moderator_mangir WITH CHECK ((SELECT faculty_id FROM account WHERE person_id=current_setting('jwt.person_id')::int)=faculty_id);
 CREATE POLICY delete_schedule_moderator ON schedule FOR DELETE TO schedule_moderator_mangir USING ((SELECT faculty_id FROM account WHERE person_id=current_setting('jwt.person_id')::int)=faculty_id);
 
-ALTER TABLE teachers ENABLE ROW LEVEL SECURITY;
-CREATE POLICY select_teachers ON teachers FOR SELECT TO schedule_admin_mangir, schedule_moderator_mangir, schedule_anonim_mangir USING (true);
-CREATE POLICY update_teachers_admin ON teachers FOR UPDATE TO schedule_admin_mangir USING (true);
-CREATE POLICY insert_teachers_admin ON teachers FOR INSERT TO schedule_admin_mangir WITH CHECK (true);
-CREATE POLICY delete_teachers_admin ON teachers FOR DELETE TO schedule_admin_mangir USING (true);
-
-CREATE POLICY update_teachers_moderator ON teachers FOR UPDATE TO schedule_moderator_mangir USING ((SELECT faculty_id FROM account WHERE person_id=current_setting('jwt.person_id')::int)=faculty_id);
-CREATE POLICY insert_teachers_moderator ON teachers FOR INSERT TO schedule_moderator_mangir WITH CHECK ((SELECT faculty_id FROM account WHERE person_id=current_setting('jwt.person_id')::int)=faculty_id);
-CREATE POLICY delete_teachers_moderator ON teachers FOR DELETE TO schedule_moderator_mangir USING ((SELECT faculty_id FROM account WHERE person_id=current_setting('jwt.person_id')::int)=faculty_id);
-
 ALTER TABLE discipline ENABLE ROW LEVEL SECURITY;
 CREATE POLICY select_discipline ON discipline FOR SELECT TO schedule_admin_mangir, schedule_moderator_mangir, schedule_anonim_mangir USING (true);
 CREATE POLICY update_discipline_admin ON discipline FOR UPDATE TO schedule_admin_mangir USING (true);
@@ -227,12 +226,7 @@ begin
   INSERT INTO account (login, hash, person_id) VALUES (login, crypt(password, gen_salt('md5')), per_id);
 end;
 $$ 
-LANGUAGE plpgsql SECURITY DEFINER;
 
-CREATE OR REPLACE FUNCTION add_teacher(name text, science_degree text, faculty_id int) RETURNS void AS 
-$$
-
-$$ 
 LANGUAGE plpgsql SECURITY DEFINER;
 
 COMMIT;
