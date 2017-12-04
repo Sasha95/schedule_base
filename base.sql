@@ -64,7 +64,7 @@ GRANT SELECT ON classroom TO schedule_anonim_mangir;
 CREATE TABLE groups(
     id SERIAL PRIMARY KEY,
     name   VARCHAR(20) NOT NULL,
-    short_name   VARCHAR(20) NOT NULL,
+    short_name   VARCHAR(20),
     recruitment_year int NOT NULL,
     faculty_id INTEGER REFERENCES faculty(id) NOT NULL,
     education_form education_form NOT NULL,
