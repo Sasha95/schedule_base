@@ -44,7 +44,7 @@ GRANT SELECT ON faculty TO schedule_anonim_mangir;
 CREATE TABLE teachers(
     id SERIAL PRIMARY KEY,
     name   TEXT NOT NULL,
-    science_degree TEXT NOT NULL
+    science_degree TEXT
 );
 
 CREATE TABLE teacher_by_faculty_master(
